@@ -1,3 +1,10 @@
+# Личный проект «Дела в Порядке»
+
+* Студент: [Анна Делян](https://up.htmlacademy.ru/php/14/user/2069609).
+* Наставник: [Михаил Селятин](https://htmlacademy.ru/profile/id919955).
+
+---
+
 # Руководство по работе с проектом
 
 Данный проект создан с помощью [Create React App](https://github.com/facebook/create-react-app).
