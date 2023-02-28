@@ -1,0 +1,20 @@
+{
+    "name": "delta/what-to-watch",
+    "description": "An online platform for finding info about movies",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Delta\\WhatToWatch\\": "backend/src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Anna Delyan",
+            "email": "anna_delyan@mail.ru"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^7.5"
+    }
+}
