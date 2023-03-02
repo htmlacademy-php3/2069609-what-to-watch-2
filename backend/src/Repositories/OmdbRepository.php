@@ -12,7 +12,7 @@ class OmdbRepository implements MovieRepositoryInterface
 {
     private string $apiKey = 'b76a7be1';
     private string $baseUri = 'https://www.omdbapi.com/';
-    private Client $client;
+    private ClientInterface $client;
 
     public function __construct(ClientInterface $httpClient)
     {
@@ -22,7 +22,7 @@ class OmdbRepository implements MovieRepositoryInterface
     /**
      * @throws GuzzleException
      */
-    public function sendRequest($imdbId): ResponseInterface
+    public function sendRequest(string $imdbId): ResponseInterface
     {
         return
             $response = $this->client->request('GET', $this->baseUri, [

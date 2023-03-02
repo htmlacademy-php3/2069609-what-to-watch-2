@@ -1,14 +1,18 @@
 <?php
 
+use Delta\WhatToWatch\Repositories\Interfaces\MovieRepositoryInterface;
 use Delta\WhatToWatch\Repositories\OmdbRepository;
 use GuzzleHttp\Client;
 
 require_once('vendor/autoload.php');
 
-$client = new Client();
-$repository = new OmdbRepository($client);
+function getMovie(MovieRepositoryInterface $movieRepository, string $imdbId): array
+{
+    return $movieRepository->getMovies($imdbId);
+}
 
 $imdbId = 'tt3896198';
-$movies = $repository->getMovies($imdbId);
-
-var_dump($movies);
+$client = new Client();
+$movieRepository = new OmdbRepository($client);
+$movie = getMovie($movieRepository, $imdbId);
+var_dump($movie);
