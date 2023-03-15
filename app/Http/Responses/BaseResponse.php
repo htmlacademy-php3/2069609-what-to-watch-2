@@ -12,6 +12,8 @@ abstract class BaseResponse implements Responsable
     public function __construct(
         protected mixed $data = [],
         public int $statusCode = Response::HTTP_OK,
+        public ?string $message = null,
+
     ) {
     }
 
