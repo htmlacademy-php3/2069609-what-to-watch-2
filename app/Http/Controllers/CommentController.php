@@ -37,7 +37,7 @@ class CommentController extends Controller
     public function update(Request $request, $id): BaseResponse
     {
         if (!$id) {
-            return new FailResponse([]);
+            return new FailResponse();
         }
         return new SuccessResponse();
     }
@@ -48,7 +48,7 @@ class CommentController extends Controller
     public function destroy($id): BaseResponse
     {
         if (!$id) {
-            return new FailResponse([]);
+            return new FailResponse();
         }
         return new SuccessResponse();
     }

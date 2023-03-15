@@ -2,22 +2,23 @@
 
 namespace App\Http\Responses;
 
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 class FailResponse extends BaseResponse
 {
-    public int $statusCode = Response::HTTP_BAD_REQUEST;
-
-    /**
-     * ExceptionResponse constructor.
-     *
-     * @param $data
-     * @param string|null $message
-     * @param int $code
-     */
-    public function __construct($data, protected ?string $message = null, int $code = Response::HTTP_BAD_REQUEST)
-    {
-        parent::__construct([], $code);
+    public function __construct(
+        protected mixed   $data = [],
+        public int        $statusCode = Response::HTTP_BAD_REQUEST,
+        public ?string    $message = null,
+        public ?Throwable $exception = null
+    ) {
+        if ($exception) {
+            $this->message = $exception->getMessage();
+            $this->statusCode = $exception->getCode();
+        }
     }
 
     /**

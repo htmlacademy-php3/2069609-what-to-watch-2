@@ -18,7 +18,7 @@ class GenreController extends Controller
         try {
             return new SuccessResponse();
         } catch (Exception $e) {
-            return new FailResponse([], $e->getMessage());
+            return new FailResponse($e);
         }
     }
 
@@ -28,7 +28,7 @@ class GenreController extends Controller
     public function update(Request $request, $id): BaseResponse
     {
         if (!$id) {
-            return new FailResponse([]);
+            return new FailResponse();
         }
         return new SuccessResponse();
     }

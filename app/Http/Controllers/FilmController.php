@@ -18,7 +18,7 @@ class FilmController extends Controller
         try {
             return new SuccessResponse();
         } catch (Exception $e) {
-            return new FailResponse([], $e->getMessage());
+            return new FailResponse($e);
         }
     }
 
@@ -30,7 +30,7 @@ class FilmController extends Controller
         try {
             return new SuccessResponse();
         } catch (Exception $e) {
-            return new FailResponse([], $e->getMessage());
+            return new FailResponse($e);
         }
     }
 
@@ -40,7 +40,7 @@ class FilmController extends Controller
     public function show($id): BaseResponse
     {
         if (!$id) {
-            return new FailResponse([]);
+            return new FailResponse();
         }
         return new SuccessResponse();
     }
@@ -51,7 +51,7 @@ class FilmController extends Controller
     public function update(Request $request, $id): BaseResponse
     {
         if (!$id) {
-            return new FailResponse([]);
+            return new FailResponse();
         }
         return new SuccessResponse();
     }
@@ -62,7 +62,7 @@ class FilmController extends Controller
     public function getSimilar($id): BaseResponse
     {
         if (!$id) {
-            return new FailResponse([]);
+            return new FailResponse();
         }
         return new SuccessResponse();
     }

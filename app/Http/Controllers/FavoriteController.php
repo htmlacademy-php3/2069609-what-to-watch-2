@@ -30,7 +30,7 @@ class FavoriteController extends Controller
         try {
             return new SuccessResponse();
         } catch (Exception $e) {
-            return new FailResponse([], $e->getMessage());
+            return new FailResponse($e);
         }
     }
 
@@ -40,7 +40,7 @@ class FavoriteController extends Controller
     public function destroy($id): BaseResponse
     {
         if (!$id) {
-            return new FailResponse([]);
+            return new FailResponse();
         }
         return new SuccessResponse();
     }
