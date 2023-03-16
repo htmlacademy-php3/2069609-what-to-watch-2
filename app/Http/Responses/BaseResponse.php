@@ -11,7 +11,7 @@ use Throwable;
 abstract class BaseResponse implements Responsable
 {
     public function __construct(
-        protected array|Throwable $data = [],
+        protected array|Arrayable $data = [],
         public int                $statusCode = Response::HTTP_OK,
         public ?string            $message = null,
     ) {
