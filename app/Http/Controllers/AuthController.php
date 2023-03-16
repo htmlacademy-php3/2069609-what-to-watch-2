@@ -18,7 +18,7 @@ class AuthController extends Controller
         try {
             return new SuccessResponse();
         } catch (Exception $e) {
-            return new FailResponse($e);
+            return new FailResponse(exception: $e);
         }
     }
 
@@ -30,7 +30,7 @@ class AuthController extends Controller
         try {
             return new SuccessResponse();
         } catch (Exception $e) {
-            return new FailResponse($e);
+            return new FailResponse(exception: $e);
         }
     }
 
@@ -42,7 +42,7 @@ class AuthController extends Controller
         try {
             return new SuccessResponse();
         } catch (Exception $e) {
-            return new FailResponse($e);
+            return new FailResponse(exception: $e);
         }
     }
 }

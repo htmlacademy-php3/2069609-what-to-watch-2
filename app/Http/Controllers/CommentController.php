@@ -15,7 +15,7 @@ class CommentController extends Controller
     public function index(Request $request, $id): BaseResponse
     {
         if (!$id) {
-            return new FailResponse([]);
+            return new FailResponse();
         }
         return new SuccessResponse();
     }
@@ -26,7 +26,7 @@ class CommentController extends Controller
     public function store(Request $request, $id): BaseResponse
     {
         if (!$id) {
-            return new FailResponse([]);
+            return new FailResponse();
         }
         return new SuccessResponse();
     }

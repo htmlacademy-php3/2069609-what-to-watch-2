@@ -6,14 +6,14 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 abstract class BaseResponse implements Responsable
 {
     public function __construct(
-        protected mixed $data = [],
-        public int $statusCode = Response::HTTP_OK,
-        public ?string $message = null,
-
+        protected array|Throwable $data = [],
+        public int                $statusCode = Response::HTTP_OK,
+        public ?string            $message = null,
     ) {
     }
 
