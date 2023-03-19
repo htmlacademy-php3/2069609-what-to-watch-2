@@ -25,7 +25,7 @@ return new class extends Migration
             $table->integer('run_time')->nullable();
             $table->integer('released')->nullable();
             $table->string('imdb_id')->unique();
-            $table->set('status', ['pending', 'on moderation', 'ready']);
+            $table->enum('status', ['pending', 'on moderation', 'ready']);
             $table->float('rating')->nullable();
             $table->integer('scores_count')->nullable();
             $table->timestamps();
