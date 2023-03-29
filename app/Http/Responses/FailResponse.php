@@ -16,7 +16,6 @@ class FailResponse extends BaseResponse
     ) {
         if ($exception) {
             $this->message = $exception->getMessage();
-            $this->statusCode = $exception->getCode();
         }
         parent::__construct(
             $this->data,
