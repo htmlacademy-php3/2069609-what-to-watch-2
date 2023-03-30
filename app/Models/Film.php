@@ -2,10 +2,67 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * App\Models\Film
+ *
+ * @property int $id
+ * @property string $name
+ * @property string|null $poster_image
+ * @property string|null $preview_image
+ * @property string|null $background_image
+ * @property string|null $background_color
+ * @property string|null $video_link
+ * @property string|null $preview_video_link
+ * @property string|null $description
+ * @property string|null $director
+ * @property int|null $run_time
+ * @property int|null $released
+ * @property string $imdb_id
+ * @property string $status
+ * @property float|null $rating
+ * @property int|null $scores_count
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read Collection<int, Actor> $actors
+ * @property-read int|null $actors_count
+ * @property-read Collection<int, Comment> $comments
+ * @property-read int|null $comments_count
+ * @property-read Collection<int, Genre> $genres
+ * @property-read int|null $genres_count
+ * @property-read Collection<int, User> $users
+ * @property-read int|null $users_count
+ * @method static Builder|Film newModelQuery()
+ * @method static Builder|Film newQuery()
+ * @method static Builder|Film query()
+ * @method static Builder|Film whereBackgroundColor($value)
+ * @method static Builder|Film whereBackgroundImage($value)
+ * @method static Builder|Film whereCreatedAt($value)
+ * @method static Builder|Film whereDeletedAt($value)
+ * @method static Builder|Film whereDescription($value)
+ * @method static Builder|Film whereDirector($value)
+ * @method static Builder|Film whereId($value)
+ * @method static Builder|Film whereImdbId($value)
+ * @method static Builder|Film whereName($value)
+ * @method static Builder|Film wherePosterImage($value)
+ * @method static Builder|Film wherePreviewImage($value)
+ * @method static Builder|Film wherePreviewVideoLink($value)
+ * @method static Builder|Film whereRating($value)
+ * @method static Builder|Film whereReleased($value)
+ * @method static Builder|Film whereRunTime($value)
+ * @method static Builder|Film whereScoresCount($value)
+ * @method static Builder|Film whereStatus($value)
+ * @method static Builder|Film whereUpdatedAt($value)
+ * @method static Builder|Film whereVideoLink($value)
+ * @mixin \Eloquent
+ */
 class Film extends Model
 {
     protected $table = 'films';
