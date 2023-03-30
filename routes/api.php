@@ -27,28 +27,31 @@ Route::post('/login', [AuthController::class, 'login']);
 //авторизация
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 //авторизация
-Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'show']);
+Route::prefix('user')->middleware('auth:sanctum')->group(function () {
+    Route::get('/', [UserController::class, 'show']);
+    Route::patch('/', [UserController::class, 'update']);
+});
+//авторизация + Модератор
+Route::prefix('comments')->middleware('auth:sanctum')->group(function () {
+    Route::patch('/{comment}', [CommentController::class, 'update']);
+    Route::delete('/{comment}', [CommentController::class, 'destroy']);
+});
 //авторизация
-Route::middleware('auth:sanctum')->patch('/user', [UserController::class, 'update']);
+Route::prefix('films')->middleware('auth:sanctum')->group(function () {
+    Route::post('/', [FilmController::class, 'store']);
+    Route::patch('/{id}', [FilmController::class, 'update']);
+    Route::post('/{id}/favorite', [FavoriteController::class, 'store']);
+    Route::delete('/{id}/favorite', [FavoriteController::class, 'destroy']);
+    Route::post('/{id}/comments', [CommentController::class, 'store']);
+});
 //для всех
-Route::get('/films', [FilmController::class, 'index']);
-//Модератор
-Route::middleware('auth:sanctum')->post('/films', [FilmController::class, 'store']);
-//доступ для всех
-Route::get('/films/{id}', [FilmController::class, 'show']);
-//Модератор
-Route::middleware('auth:sanctum')->patch('/films/{id}', [FilmController::class, 'update']);
+Route::prefix('films')->group(function () {
+    Route::get('/', [FilmController::class, 'index']);
+    Route::get('/{id}', [FilmController::class, 'show']);
+    Route::get('/{id}/similar', [FilmController::class, 'getSimilar']);
+    Route::get('/{id}/comments', [CommentController::class, 'index']);
+});
 //для всех
-Route::get('/films/{id}/similar', [FilmController::class, 'getSimilar']);
-//авторизация
-Route::middleware('auth:sanctum')->post('/films/{id}/favorite', [FavoriteController::class, 'store']);
-//авторизация
-Route::middleware('auth:sanctum')->delete('/films/{id}/favorite', [FavoriteController::class, 'destroy']);
-//для всех
-Route::get('/films/{id}/comments', [CommentController::class, 'index']);
-//авторизация
-Route::middleware('auth:sanctum')->post('/films/{id}/comments', [CommentController::class, 'store']);
-//доступ для всех
 Route::get('/genres', [GenreController::class, 'index']);
 //Модератор
 Route::middleware('auth:sanctum')->patch('/genres/{genre}', [GenreController::class, 'update']);
@@ -58,7 +61,4 @@ Route::get('/promo', [PromoController::class, 'index']);
 Route::middleware('auth:sanctum')->post('/promo/{id}', [PromoController::class, 'store']);
 //авторизация
 Route::middleware('auth:sanctum')->get('/favorite', [FavoriteController::class, 'index']);
-//авторизация + Модератор
-Route::middleware('auth:sanctum')->patch('/comments/{comment}', [CommentController::class, 'update']);
-//авторизация + Модератор
-Route::middleware('auth:sanctum')->delete('/comments/{comment}', [CommentController::class, 'destroy']);
+
