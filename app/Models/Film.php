@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -26,7 +28,6 @@ use Illuminate\Support\Carbon;
  * @property int|null $released
  * @property string $imdb_id
  * @property string $status
- * @property float|null $rating
  * @property int|null $scores_count
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -54,17 +55,20 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Film wherePosterImage($value)
  * @method static Builder|Film wherePreviewImage($value)
  * @method static Builder|Film wherePreviewVideoLink($value)
- * @method static Builder|Film whereRating($value)
  * @method static Builder|Film whereReleased($value)
  * @method static Builder|Film whereRunTime($value)
  * @method static Builder|Film whereScoresCount($value)
  * @method static Builder|Film whereStatus($value)
  * @method static Builder|Film whereUpdatedAt($value)
  * @method static Builder|Film whereVideoLink($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class Film extends Model
 {
+    use HasFactory;
+    /**
+     * @var string
+     */
     protected $table = 'films';
 
     /**
@@ -107,5 +111,16 @@ class Film extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+
+    /**
+     * Метод определения рейтинга фильма, основанный на вычислении среднего значения оценок пользователей
+     *
+     * @return float
+     */
+    public function getRating(): float
+    {
+        return round($this->comments->avg('rating'), 1);
     }
 }
