@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -31,10 +33,11 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Comment whereText($value)
  * @method static Builder|Comment whereUpdatedAt($value)
  * @method static Builder|Comment whereUserId($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class Comment extends Model
 {
+    use HasFactory;
     protected $table = 'comments';
 
     /**
@@ -59,7 +62,10 @@ class Comment extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)
+            ->withDefault([
+                'name' => 'Guest Author',
+            ]);
     }
 
     public function film(): BelongsTo

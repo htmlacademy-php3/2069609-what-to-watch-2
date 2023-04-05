@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -25,10 +27,11 @@ use Illuminate\Support\Carbon;
  * @method static Builder|ActorFilm whereFilmId($value)
  * @method static Builder|ActorFilm whereId($value)
  * @method static Builder|ActorFilm whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class ActorFilm extends Model
 {
+    use HasFactory;
     protected $table = 'actor_film';
 
     /**
