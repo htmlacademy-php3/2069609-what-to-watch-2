@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Responses;
+namespace App\Http\Responses\Fail;
 
+use App\Http\Responses\BaseResponse;
 use Illuminate\Contracts\Support\Arrayable;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -32,8 +33,10 @@ class FailResponse extends BaseResponse
     protected function makeResponseData(): array
     {
         return [
-            'message' => $this->message,
-            'errors' => $this->prepareData(),
+            'data' => [
+                'message' => $this->message,
+                'errors' => $this->prepareData(),
+            ]
         ];
     }
 }

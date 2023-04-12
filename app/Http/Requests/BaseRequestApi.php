@@ -23,6 +23,7 @@ abstract class BaseRequestApi extends FormRequest
         $errors = (new ValidationException($validator))->errors();
 
         throw new HttpResponseException(
+            //ошибка 422
             response()->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY)
         );
     }

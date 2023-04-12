@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Responses;
+namespace App\Http\Responses\Success;
+
+use App\Http\Responses\BaseResponse;
 
 class SuccessResponse extends BaseResponse
 {
@@ -11,6 +13,8 @@ class SuccessResponse extends BaseResponse
      */
     protected function makeResponseData(): array
     {
-        return $this->prepareData();
+        return [
+            'data' => $this->prepareData()
+        ];
     }
 }
