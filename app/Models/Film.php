@@ -77,9 +77,13 @@ class Film extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
         'imdb_id',
         'status',
+        'name',
+        'description',
+        'director',
+        'run_time',
+        'released',
     ];
 
     /**

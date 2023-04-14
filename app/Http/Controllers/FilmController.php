@@ -17,9 +17,9 @@ use App\Models\Film;
 use App\Models\FilmGenre;
 use Auth;
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class FilmController extends Controller
 {
@@ -45,6 +45,7 @@ class FilmController extends Controller
      *
      * @param FilmAddRequest $request
      * @return BaseResponse
+     * @throws GuzzleException
      */
     public function store(FilmAddRequest $request): BaseResponse
     {
@@ -53,12 +54,18 @@ class FilmController extends Controller
                 return new ForbiddenResponse();
             }
             $imdbId = $request->imdb_id;
-            $film = AddFilmFromRepository::getFilm($imdbId);
+            $film = AddFilmFromRepository::getFilmInfo($imdbId);
 
+            $runTime = strtok($film['Runtime'], " ");
+            $released = strstr($film['Released'], ' ', true);
             Film::create([
                 'imdb_id' => $imdbId,
                 'status' => 'pending',
-                'name' => $film['Title']
+                'name' => $film['Title'],
+                'description' => $film['Plot'],
+                'director' => $film['Director'],
+                'run_time' => $runTime,
+                'released' => $released,
                 ]);
 
             $addFilmId = Film::where('imdb_id', '=', $imdbId)->pluck('id');
