@@ -42,7 +42,9 @@ class GenreController extends Controller
     public function update(GenreUpdateRequest $request, int $genreId): BaseResponse
     {
         try {
-            if (!$genreId) {
+            $genre = Genre::find($genreId);
+
+            if (!$genre) {
                 return new NotFoundResponse();
             }
 
@@ -50,14 +52,6 @@ class GenreController extends Controller
                 return new ForbiddenResponse();
             }
 
-            $genreIds = DB::table('genres')->pluck('id')->all();
-
-            if (!in_array($genreId, $genreIds)) {
-                return new NotFoundResponse();
-            }
-
-            $genre = Genre::find($genreId);
-            //Смотрит в запросе, что надо изменить (название жанра), валидирует, обновляет если все ок
             $genre->update($request->validated());
             return new SuccessResponse($genre->fresh());
         } catch (Exception $e) {

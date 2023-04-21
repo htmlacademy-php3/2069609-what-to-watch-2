@@ -37,7 +37,7 @@ class FilmUpdateRequest extends BaseRequestApi
             'genre_id' => 'array',
             'run_time' => 'integer|max:500',
             'released' => 'integer|max:2023',
-            'imdb_id' => 'required|string|max:9|',
+            'imdb_id' => 'required|string|regex:/(^tt\d{7}$)/|min:9|max:9',
             'status' => 'required|string'
         ];
     }

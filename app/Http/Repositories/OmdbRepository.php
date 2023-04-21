@@ -3,7 +3,6 @@
 namespace App\Http\Repositories;
 
 use App\Http\Repositories\Interfaces\MovieRepositoryInterface;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
