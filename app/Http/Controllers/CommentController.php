@@ -21,7 +21,6 @@ class CommentController extends Controller
 {
     /**
      * Получение списка комментариев к фильму
-     * Доступно всем
      *
      * @param int $filmId - id фильма, для которого получаем список комментариев
      * @return BaseResponse
@@ -32,8 +31,7 @@ class CommentController extends Controller
 
         $commentService = new CommentService();
 
-        if (!$film)
-        {
+        if (!$film) {
             return new NotFoundResponse();
         }
 
@@ -44,7 +42,6 @@ class CommentController extends Controller
 
     /**
      * Добавление комментария к фильму
-     * Доступно только авторизованным пользователям
      *
      * @param CommentAddRequest $request
      * @param int $filmId - id фильма, для которого создается новый комментарий
@@ -56,8 +53,7 @@ class CommentController extends Controller
             $film = Film::find($filmId);
             $commentService = new CommentService();
 
-            if (!$film)
-            {
+            if (!$film) {
                 return new NotFoundResponse();
             }
 
@@ -71,7 +67,6 @@ class CommentController extends Controller
 
     /**
      * Редактирование комментария
-     * Доступуно авторизованному автору комментария или модератору
      *
      * @param CommentUpdateRequest $request
      * @param int $commentId - id редактируемого комментария
@@ -82,15 +77,13 @@ class CommentController extends Controller
         try {
             $comment = Comment::find($commentId);
 
-            if (!$comment)
-            {
+            if (!$comment) {
                 return new NotFoundResponse();
             }
 
             $user = Auth::user();
 
-            if ((Permission::isUserAuthor($user, $comment) || Permission::isUserModerator($user)) == 0)
-            {
+            if ((Permission::isUserAuthor($user, $comment) || Permission::isUserModerator($user)) == 0) {
                 return new ForbiddenResponse();
             }
 
@@ -104,8 +97,6 @@ class CommentController extends Controller
 
     /**
      * Удаление комментария
-     * Доступно авторизованному автору комментария, если у него нет потомков комментариев.
-     * И модератору, в этом случае удаляются и потомки.
      *
      * @param int $commentId - id удаляемого комментария
      * @return BaseResponse
@@ -116,8 +107,7 @@ class CommentController extends Controller
         try {
             $comment = Comment::find($commentId);
 
-            if (!$comment)
-            {
+            if (!$comment) {
                 return new NotFoundResponse();
             }
 
@@ -125,16 +115,14 @@ class CommentController extends Controller
             $commentService = new CommentService($comment);
 
             //Если тек пользователь автор|модератор && у комментария нет потомков
-            if ((Permission::isUserAuthor($user, $comment) || Permission::isUserModerator($user)) && !$commentService->isCommentHaveChildren())
-            {
+            if ((Permission::isUserAuthor($user, $comment) || Permission::isUserModerator($user)) && !$commentService->isCommentHaveChildren()) {
                 $comment->delete();
                 $messageData = ['message' => 'Комментарий успешно удален'];
                 return new SuccessResponse($messageData);
             }
 
             //Если тек пользователь модератор && у комментария есть потомки
-            if (Permission::isUserModerator($user) && $commentService->isCommentHaveChildren())
-            {
+            if (Permission::isUserModerator($user) && $commentService->isCommentHaveChildren()) {
                 $commentService->deleteCommentAndChildren();
 
                 $messageData = ['message' => 'Комментарий  и его потомки успешно удалены'];
@@ -142,8 +130,7 @@ class CommentController extends Controller
             }
 
             //Если текущий пользователь автор, но у комментария есть потомки
-            if (Permission::isUserAuthor($user, $comment) && $commentService->isCommentHaveChildren())
-            {
+            if (Permission::isUserAuthor($user, $comment) && $commentService->isCommentHaveChildren()) {
                 return new ForbiddenResponse(message: 'Вы не можете удалить данный комментарий, тк у него есть ответы.');
             }
 

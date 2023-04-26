@@ -16,7 +16,6 @@ class AuthController extends Controller
 {
     /**
      * Регистрация пользователя
-     * Доступно всем
      *
      * @param RegisterRequest $request
      * @return BaseResponse
@@ -44,7 +43,6 @@ class AuthController extends Controller
 
     /**
      * Аутентификация пользователя
-     * Доступно всем
      *
      * @param LoginRequest $request
      * @return BaseResponse
@@ -72,7 +70,6 @@ class AuthController extends Controller
 
     /**
      * Выход пользователя из системы
-     * Доступно залогиненным пользователям
      *
      * @return BaseResponse
      */

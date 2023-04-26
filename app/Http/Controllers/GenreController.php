@@ -17,7 +17,6 @@ class GenreController extends Controller
 {
     /**
      * Получение списка жанров
-     * Доступно всем
      *
      * @return BaseResponse
      */
@@ -33,7 +32,6 @@ class GenreController extends Controller
 
     /**
      * Редакторивание жанра
-     * Доступно только авторизованному модератору
      *
      * @param GenreUpdateRequest $request
      * @param int $genreId

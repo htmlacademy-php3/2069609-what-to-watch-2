@@ -24,7 +24,6 @@ class FilmController extends Controller
 {
     /**
      * Получение списка всех фильмов, на каждой странице по 8 фильмов
-     * Доступно всем
      *
      * @return BaseResponse
      */
@@ -40,7 +39,6 @@ class FilmController extends Controller
 
     /**
      * Добавление фильма в базу
-     * Доступно авторизованному модератору
      *
      * @param FilmAddRequest $request
      * @return BaseResponse
@@ -51,13 +49,13 @@ class FilmController extends Controller
         try {
             $user = Auth::user();
 
-            if (!Permission::isUserModerator($user))
-            {
+            if (!Permission::isUserModerator($user)) {
                 return new ForbiddenResponse();
             }
 
-            $filmService = new FilmService();
             $imdbId = $request->imdb_id;
+
+            $filmService = new FilmService();
 
             $data = $filmService->addFilm($imdbId);
 
@@ -69,7 +67,6 @@ class FilmController extends Controller
 
     /**
      * Получение инфо о фильме
-     * Доступно всем. Авторизованному пользователю доп поле - любимый фильм или нет.
      *
      * @param int $filmId - id запрашиваемого фильма
      * @param Request $request
@@ -97,7 +94,6 @@ class FilmController extends Controller
 
     /**
      * Редактирование фильма
-     * Доступно авторизованному модератору.
      *
      * @param FilmUpdateRequest $request
      * @param int $filmId - id редактируемого фильма
@@ -142,7 +138,6 @@ class FilmController extends Controller
 
     /**
      * Получение списка из четырех похожих фильмов. Похожесть определяется по жанру.
-     * Доступно всем
      *
      * @param int $filmId - id фильма, по которому выдается список похожих фильмов
      * @return BaseResponse

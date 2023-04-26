@@ -6,7 +6,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UnauthorizedResponse extends FailResponse
 {
-    //ошибка 401 - неавторизован
     public function __construct(
         public int                $statusCode = Response::HTTP_UNAUTHORIZED,
         public ?string            $message = 'Запрос требует аутентификации.',

@@ -6,7 +6,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class NotFoundResponse extends FailResponse
 {
-    //ошибка 404 - не найдено
     public function __construct(
         public int                $statusCode = Response::HTTP_NOT_FOUND,
         public ?string            $message = 'Запрашиваемая страница не существует.',

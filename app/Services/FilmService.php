@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Http\Repositories\AddFilmFromRepository;
 use App\Http\Repositories\OmdbRepository;
 use App\Http\Requests\Film\FilmUpdateRequest;
 use App\Models\ActorFilm;
@@ -11,7 +10,6 @@ use App\Models\FilmGenre;
 use App\Models\User;
 use Exception;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -19,27 +17,25 @@ use Throwable;
 class FilmService
 {
     private Film|null $film;
+    private OmdbRepository $repository;
 
     public function __construct(Film $film = null)
     {
         $this->film = $film;
+        $this->repository = new OmdbRepository(new Client());
     }
+
 
     /**
      * Метод добавления фильма в базу, возвращающий информацию о фильме
      *
      * @param string $imdbId - id добавляемого фильма
      * @return Film
-     * @throws GuzzleException
      * @throws Throwable
      */
     public function addFilm(string $imdbId): Film
     {
-        $client = new Client();
-        $omdbRepository = new OmdbRepository($client);
-        $omdbFilm = new AddFilmFromRepository($omdbRepository, $imdbId);
-
-        $film = $omdbFilm->getFilmInfo();
+        $film = $this->repository->getMovies($imdbId);
 
         $runTime = strtok($film['Runtime'], " ");
         $released = strstr($film['Released'], ' ', true);
@@ -185,20 +181,9 @@ class FilmService
         shuffle($uniqueSimilarFilmsIds);
         $filmIdsForShow = array_slice($uniqueSimilarFilmsIds, 0, 4);
 
-        $films = [];
-
-        DB::beginTransaction();
-        try {
-            foreach ($filmIdsForShow as $filmIdForShow) {
-                $films[] = $this->showInfoAboutFilm(idFilm: $filmIdForShow);
-            }
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollback();
-            Log::warning($e->getMessage());
-        }
-
-        return $films;
+        return DB::table('films')
+            ->whereIn('id', $filmIdsForShow)
+            ->get()->all();
     }
 
 }

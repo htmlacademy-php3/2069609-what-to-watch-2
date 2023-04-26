@@ -16,10 +16,7 @@ class Permission
      */
     public static function isUserAuthor(User $user, Comment $comment):bool
     {
-        if ($user->id === $comment->user_id){
-            return true;
-        }
-        return false;
+        return $user->id === $comment->user_id;
     }
 
     /**
@@ -30,9 +27,6 @@ class Permission
      */
     public static function isUserModerator(User $user): bool
     {
-        if ($user->is_moderator == 1) {
-            return true;
-        }
-        return false;
+        return $user->is_moderator;
     }
 }
