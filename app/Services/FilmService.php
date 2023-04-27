@@ -2,29 +2,26 @@
 
 namespace App\Services;
 
-use App\Http\Repositories\OmdbRepository;
+use App\Http\Repositories\Interfaces\MovieRepositoryInterface;
 use App\Http\Requests\Film\FilmUpdateRequest;
 use App\Models\ActorFilm;
 use App\Models\Film;
 use App\Models\FilmGenre;
 use App\Models\User;
 use Exception;
-use GuzzleHttp\Client;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class FilmService
 {
-    private Film|null $film;
-    private OmdbRepository $repository;
+    private Film $film;
+    private MovieRepositoryInterface $repository;
 
-    public function __construct(Film $film = null)
+    public function __construct(MovieRepositoryInterface $repository)
     {
-        $this->film = $film;
-        $this->repository = new OmdbRepository(new Client());
+        $this->repository = $repository;
     }
-
 
     /**
      * Метод добавления фильма в базу, возвращающий информацию о фильме
@@ -56,15 +53,10 @@ class FilmService
      * Метод добавления фильма в базу, возвращающий информацию о фильме
      *
      * @param User|null $user - null, если пользователь не авторизован, поле isFavorite не выводится
-     * @param int|null $idFilm - если нужно вывести информацию по id фильма
      * @return array
      */
-    public function showInfoAboutFilm(User $user = null, int|null $idFilm = null): array
+    public function showInfoAboutFilm(User $user = null): array
     {
-        if ($idFilm) {
-            $this->film = Film::find($idFilm);
-        }
-
         $filmStarring = $this->film->actors->pluck('name');
         $filmGenres = $this->film->genres->pluck('title');
         $filmRating = $this->film->getRating();
@@ -184,6 +176,17 @@ class FilmService
         return DB::table('films')
             ->whereIn('id', $filmIdsForShow)
             ->get()->all();
+    }
+
+    /**
+     * Метод, устанавливающий текущий фильм
+     *
+     * @param Film $film - текущий фильм
+     * @return void
+     */
+    public function setFilm(Film $film): void
+    {
+        $this->film = $film;
     }
 
 }

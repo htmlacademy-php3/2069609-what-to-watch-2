@@ -62,7 +62,7 @@ class User extends Authenticatable
 
     protected $table = 'users';
     protected $attributes = [
-        'is_moderator' => true,
+        'is_moderator' => false,
     ];
 
     /**

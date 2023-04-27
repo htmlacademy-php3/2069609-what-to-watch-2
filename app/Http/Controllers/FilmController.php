@@ -14,7 +14,6 @@ use App\Models\Film;
 use App\Services\FilmService;
 use Auth;
 use Exception;
-use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -22,6 +21,13 @@ use Throwable;
 
 class FilmController extends Controller
 {
+    private FilmService $filmService;
+
+    public function __construct(FilmService $filmService)
+    {
+        $this->filmService = $filmService;
+    }
+
     /**
      * Получение списка всех фильмов, на каждой странице по 8 фильмов
      *
@@ -42,7 +48,7 @@ class FilmController extends Controller
      *
      * @param FilmAddRequest $request
      * @return BaseResponse
-     * @throws GuzzleException|Throwable
+     * @throws Throwable
      */
     public function store(FilmAddRequest $request): BaseResponse
     {
@@ -55,9 +61,7 @@ class FilmController extends Controller
 
             $imdbId = $request->imdb_id;
 
-            $filmService = new FilmService();
-
-            $data = $filmService->addFilm($imdbId);
+            $data = $this->filmService->addFilm($imdbId);
 
             return new SuccessResponse($data);
         } catch (Exception $e) {
@@ -82,9 +86,9 @@ class FilmController extends Controller
             }
 
             $user = $request->user('sanctum');
-            $filmService = new FilmService($film);
 
-            $data = $filmService->showInfoAboutFilm($user);
+            $this->filmService->setFilm($film);
+            $data = $this->filmService->showInfoAboutFilm($user);
 
             return new SuccessResponse($data);
         } catch (Exception $e) {
@@ -115,20 +119,20 @@ class FilmController extends Controller
                 return new ForbiddenResponse();
             }
 
-            $filmService = new FilmService($film);
+            $this->filmService->setFilm($film);
 
             DB::beginTransaction();
             try {
                 $film->update($request->validated());
-                $filmService->updateGenresForFilm($request);
-                $filmService->updateActorsForFilm($request);
+                $this->filmService->updateGenresForFilm($request);
+                $this->filmService->updateActorsForFilm($request);
                 DB::commit();
             } catch (Exception $e) {
                 DB::rollback();
                 Log::warning($e->getMessage());
             }
 
-            $data = $filmService->showInfoAboutFilm($user);
+            $data = $this->filmService->showInfoAboutFilm($user);
 
             return new SuccessResponse($data);
         } catch (Exception $e) {
@@ -152,8 +156,8 @@ class FilmController extends Controller
                 return new NotFoundResponse();
             }
 
-            $filmService = new FilmService($film);
-            $data = $filmService->getSimilarFilms();
+            $this->filmService->setFilm($film);
+            $data = $this->filmService->getSimilarFilms();
 
             return new SuccessResponse($data);
 

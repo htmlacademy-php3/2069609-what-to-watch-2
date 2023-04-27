@@ -12,17 +12,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-/**
- *
- */
 class CommentService
 {
-    private Comment|null $comment;
-    public function __construct(Comment $comment = null)
-    {
-        $this->comment = $comment;
-    }
-
+    private Comment $comment;
 
     /**
      * Метод получения списка комментариев
@@ -94,5 +86,16 @@ class CommentService
             DB::rollback();
             Log::warning($e->getMessage());
         }
+    }
+
+    /**
+     * Метод, устанавливающий текущий комментарий
+     *
+     * @param Comment $comment - текущий комментарий
+     * @return void
+     */
+    public function setComment(Comment $comment): void
+    {
+        $this->comment = $comment;
     }
 }
