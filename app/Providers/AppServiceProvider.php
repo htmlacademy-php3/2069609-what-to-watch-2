@@ -15,18 +15,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // так работает
-        $this->app->bind(MovieRepositoryInterface::class, function ($app) {
-            return new OmdbRepository($app->make(Client::class));
-        });
+        $this->app->bind(ClientInterface::class, Client::class);
+        $this->app->bind(MovieRepositoryInterface::class, OmdbRepository::class);
 
-         // Так не работает!
-        /*
-        $this->app->bind(
-            ClientInterface::class,
-            Client::class
-        );
-        */
     }
 
     /**
