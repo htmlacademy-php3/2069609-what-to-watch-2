@@ -33,28 +33,30 @@ Route::prefix('user')->middleware('auth:sanctum')->group(function () {
 });
 //авторизация + Модератор
 Route::prefix('comments')->middleware('auth:sanctum')->group(function () {
-    Route::patch('/{comment}', [CommentController::class, 'update']);
-    Route::delete('/{comment}', [CommentController::class, 'destroy']);
+    Route::patch('/{comment}', [CommentController::class, 'update'])->name('comments.update');
+    Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('comments.delete');
 });
 //авторизация
 Route::prefix('films')->middleware('auth:sanctum')->group(function () {
-    Route::post('/', [FilmController::class, 'store']);
-    Route::patch('/{id}', [FilmController::class, 'update']);
+    Route::post('/', [FilmController::class, 'store'])->name('films.store');
+    Route::patch('/{id}', [FilmController::class, 'update'])->name('films.update');
     Route::post('/{id}/favorite', [FavoriteController::class, 'store']);
     Route::delete('/{id}/favorite', [FavoriteController::class, 'destroy']);
-    Route::post('/{id}/comments', [CommentController::class, 'store']);
+    Route::post('/{id}/comments', [CommentController::class, 'store'])->name('comments.store');
 });
 //для всех
 Route::prefix('films')->group(function () {
-    Route::get('/', [FilmController::class, 'index']);
-    Route::get('/{id}', [FilmController::class, 'show']);
-    Route::get('/{id}/similar', [FilmController::class, 'getSimilar']);
-    Route::get('/{id}/comments', [CommentController::class, 'index']);
+    Route::get('/', [FilmController::class, 'index'])->name('films.index');
+    Route::get('/{id}', [FilmController::class, 'show'])->name('films.show');
+    Route::get('/{id}/similar', [FilmController::class, 'similar'])->name('films.similar');
+    Route::get('/{id}/comments', [CommentController::class, 'index'])->name('comments.index');
 });
+
 //для всех
-Route::get('/genres', [GenreController::class, 'index']);
+Route::get('/genres', [GenreController::class, 'index'])->name('genres.index');
 //Модератор
-Route::middleware('auth:sanctum')->patch('/genres/{genre}', [GenreController::class, 'update']);
+Route::middleware('auth:sanctum')->patch('/genres/{id}', [GenreController::class, 'update'])->name('genres.update');
+
 //для всех
 Route::get('/promo', [PromoController::class, 'index']);
 //Модератор

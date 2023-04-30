@@ -6,7 +6,6 @@ use App\Models\Comment;
 use App\Models\Film;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-//use PHPUnit\Framework\TestCase;
 use Tests\TestCase;
 
 class CommentTest extends TestCase

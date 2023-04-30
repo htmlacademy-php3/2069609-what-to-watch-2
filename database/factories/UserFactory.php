@@ -35,6 +35,20 @@ class UserFactory extends Factory
     }
 
     /**
+     * Установка пользователю роли модератор
+     *
+     * @return UserFactory
+     */
+    public function moderator(): UserFactory
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'is_moderator' => true,
+            ];
+        });
+    }
+
+    /**
      * Indicate that the model's email address should be unverified.
      *
      * @return static

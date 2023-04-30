@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Authentication\LoginRequest;
 use App\Http\Requests\Authentication\RegisterRequest;
 use App\Http\Responses\BaseResponse;
-use App\Http\Responses\FailResponse;
-use App\Http\Responses\SuccessResponse;
+use App\Http\Responses\Fail\FailResponse;
+use App\Http\Responses\Success\SuccessResponse;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -80,7 +80,7 @@ class AuthController extends Controller
             $data = [
                 'message' => 'Успешный выход из системы'
             ];
-            return new SuccessResponse(data: $data, statusCode: 204);
+            return new SuccessResponse(data: $data);
         } catch (Throwable $e) {
             return new FailResponse(statusCode: 500, exception: $e);
         }

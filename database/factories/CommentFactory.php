@@ -29,8 +29,8 @@ class CommentFactory extends Factory
         return [
             'text' => $this->faker->name(),
             'rating' => $this->faker->numberBetween(1, 10),
-            'user_id' => User::inRandomOrder()->first()->id,
-            'film_id' => Film::inRandomOrder()->first()->id,
+            'user_id' => User::factory()->create(),
+            'film_id' => Film::factory()->create(),
         ];
     }
 }
