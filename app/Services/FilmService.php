@@ -4,9 +4,11 @@ namespace App\Services;
 
 use App\Http\Repositories\Interfaces\MovieRepositoryInterface;
 use App\Http\Requests\Film\FilmUpdateRequest;
+use App\Models\Actor;
 use App\Models\ActorFilm;
 use App\Models\Film;
 use App\Models\FilmGenre;
+use App\Models\Genre;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -37,7 +39,21 @@ class FilmService
         $runTime = strtok($film['Runtime'], " ");
         $released = strstr($film['Released'], ' ', true);
 
-        return Film::create([
+        $actorIds = [];
+        $actorsList = $film['Actors'];
+        $actors = explode(", ", $actorsList);
+        foreach ($actors as $actor) {
+            $actorIds[] = Actor::firstOrCreate(['name' => $actor])->id;
+        }
+
+        $genreIds = [];
+        $genreList = $film['Genre'];
+        $genres = explode(", ", $genreList);
+        foreach ($genres as $genre) {
+            $genreIds[] = Genre::firstOrCreate(['title' => $genre])->id;
+        }
+
+        $film =  Film::create([
             'imdb_id' => $imdbId,
             'status' => 'pending',
             'name' => $film['Title'],
@@ -46,11 +62,24 @@ class FilmService
             'run_time' => $runTime,
             'released' => $released,
         ]);
+
+        foreach ($actorIds as $actorId) {
+            ActorFilm::create([
+                'actor_id' => $actorId,
+                'film_id' => $film->id,
+            ]);
+        }
+        foreach ($genreIds as $genreId) {
+            FilmGenre::create([
+                'genre_id' => $genreId,
+                'film_id' => $film->id,
+            ]);
+        }
+        return $film;
     }
 
-
     /**
-     * Метод добавления фильма в базу, возвращающий информацию о фильме
+     * Метод, возвращающий информацию о фильме
      *
      * @param User|null $user - null, если пользователь не авторизован, поле isFavorite не выводится
      * @return array

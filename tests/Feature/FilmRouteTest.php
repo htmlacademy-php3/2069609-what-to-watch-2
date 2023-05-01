@@ -67,7 +67,7 @@ class FilmRouteTest extends TestCase
         Sanctum::actingAs(User::factory()->moderator()->create());
         $response = $this->postJson(route('films.store'), ['imdb_id' => $testImdbId1]);
 
-        $response->assertOk();
+        $response->assertStatus(201);
         $response->assertJsonStructure([
             'data' => []
         ]);
