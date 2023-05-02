@@ -39,41 +39,67 @@ class FilmService
         $runTime = strtok($film['Runtime'], " ");
         $released = strstr($film['Released'], ' ', true);
 
-        $actorIds = [];
         $actorsList = $film['Actors'];
-        $actors = explode(", ", $actorsList);
-        foreach ($actors as $actor) {
-            $actorIds[] = Actor::firstOrCreate(['name' => $actor])->id;
-        }
+        $allActors = explode(", ", $actorsList);
+        $actorsAlreadyExist = DB::table('actors')
+         ->whereIn('name', $allActors)
+         ->pluck('name')
+         ->all();
 
-        $genreIds = [];
         $genreList = $film['Genre'];
-        $genres = explode(", ", $genreList);
-        foreach ($genres as $genre) {
-            $genreIds[] = Genre::firstOrCreate(['title' => $genre])->id;
-        }
+        $allGenres = explode(", ", $genreList);
+        $genresAlreadyExist = DB::table('genres')
+            ->whereIn('title', $allGenres)
+            ->pluck('title')
+            ->all();
 
-        $film =  Film::create([
-            'imdb_id' => $imdbId,
-            'status' => 'pending',
-            'name' => $film['Title'],
-            'description' => $film['Plot'],
-            'director' => $film['Director'],
-            'run_time' => $runTime,
-            'released' => $released,
-        ]);
+        $actorsForAdd = array_diff($allActors, $actorsAlreadyExist);
+        $genresForAdd = array_diff($allGenres, $genresAlreadyExist);
 
-        foreach ($actorIds as $actorId) {
-            ActorFilm::create([
-                'actor_id' => $actorId,
-                'film_id' => $film->id,
+        DB::beginTransaction();
+        try {
+            foreach ($actorsForAdd as $actor) {
+                Actor::create(['name' => $actor]);
+            }
+            foreach ($genresForAdd as $genre) {
+                Genre::create(['title' => $genre]);
+            }
+
+            $allActorsIds = DB::table('actors')
+                ->whereIn('name', $allActors)
+                ->pluck('id')
+                ->all();
+            $allGenresIds = DB::table('genres')
+                ->whereIn('title', $allActors)
+                ->pluck('id')
+                ->all();
+
+            $film = Film::create([
+                'imdb_id' => $imdbId,
+                'status' => 'pending',
+                'name' => $film['Title'],
+                'description' => $film['Plot'],
+                'director' => $film['Director'],
+                'run_time' => $runTime,
+                'released' => $released,
             ]);
-        }
-        foreach ($genreIds as $genreId) {
-            FilmGenre::create([
-                'genre_id' => $genreId,
-                'film_id' => $film->id,
-            ]);
+
+            foreach ($allActorsIds as $actorId) {
+                ActorFilm::create([
+                    'actor_id' => $actorId,
+                    'film_id' => $film->id,
+                ]);
+            }
+            foreach ($allGenresIds as $genreId) {
+                FilmGenre::create([
+                    'genre_id' => $genreId,
+                    'film_id' => $film->id,
+                ]);
+            }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            Log::warning($e->getMessage());
         }
         return $film;
     }

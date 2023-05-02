@@ -19,6 +19,13 @@ class AddFilm implements ShouldQueue
     }
 
     /**
+     * Количество попыток выполнения задания.
+     *
+     * @var int
+     */
+    public int $tries = 3;
+
+    /**
      * Метод, описывающий задачу по добавлению фильма в базу из внешнего источника
      *
      * @param FilmService $filmService
