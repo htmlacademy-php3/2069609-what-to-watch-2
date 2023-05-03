@@ -10,6 +10,7 @@ use App\Http\Responses\Fail\ForbiddenResponse;
 use App\Http\Responses\Fail\NotFoundResponse;
 use App\Http\Responses\Success\SuccessPaginatedResponse;
 use App\Http\Responses\Success\SuccessResponse;
+use App\Jobs\AddFilm;
 use App\Models\Film;
 use App\Services\FilmService;
 use Auth;
@@ -59,13 +60,10 @@ class FilmController extends Controller
                 return new ForbiddenResponse();
             }
 
-            $imdbId = $request->imdb_id;
-
-            $data = $this->filmService->addFilm($imdbId);
-
-            return new SuccessResponse($data);
+            AddFilm::dispatch($request->imdb_id);
+            return new SuccessResponse(['message' => 'Фильм успешно сохранен в базу'], 201);
         } catch (Exception $e) {
-            return new FailResponse(exception: $e);
+            return new FailResponse(statusCode: 500, exception: $e);
         }
     }
 

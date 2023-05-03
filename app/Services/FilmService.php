@@ -4,9 +4,11 @@ namespace App\Services;
 
 use App\Http\Repositories\Interfaces\MovieRepositoryInterface;
 use App\Http\Requests\Film\FilmUpdateRequest;
+use App\Models\Actor;
 use App\Models\ActorFilm;
 use App\Models\Film;
 use App\Models\FilmGenre;
+use App\Models\Genre;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -37,20 +39,73 @@ class FilmService
         $runTime = strtok($film['Runtime'], " ");
         $released = strstr($film['Released'], ' ', true);
 
-        return Film::create([
-            'imdb_id' => $imdbId,
-            'status' => 'pending',
-            'name' => $film['Title'],
-            'description' => $film['Plot'],
-            'director' => $film['Director'],
-            'run_time' => $runTime,
-            'released' => $released,
-        ]);
+        $actorsList = $film['Actors'];
+        $allActors = explode(", ", $actorsList);
+        $actorsAlreadyExist = DB::table('actors')
+         ->whereIn('name', $allActors)
+         ->pluck('name')
+         ->all();
+
+        $genreList = $film['Genre'];
+        $allGenres = explode(", ", $genreList);
+        $genresAlreadyExist = DB::table('genres')
+            ->whereIn('title', $allGenres)
+            ->pluck('title')
+            ->all();
+
+        $actorsForAdd = array_diff($allActors, $actorsAlreadyExist);
+        $genresForAdd = array_diff($allGenres, $genresAlreadyExist);
+
+        DB::beginTransaction();
+        try {
+            foreach ($actorsForAdd as $actor) {
+                Actor::create(['name' => $actor]);
+            }
+            foreach ($genresForAdd as $genre) {
+                Genre::create(['title' => $genre]);
+            }
+
+            $allActorsIds = DB::table('actors')
+                ->whereIn('name', $allActors)
+                ->pluck('id')
+                ->all();
+            $allGenresIds = DB::table('genres')
+                ->whereIn('title', $allActors)
+                ->pluck('id')
+                ->all();
+
+            $film = Film::create([
+                'imdb_id' => $imdbId,
+                'status' => 'pending',
+                'name' => $film['Title'],
+                'description' => $film['Plot'],
+                'director' => $film['Director'],
+                'run_time' => $runTime,
+                'released' => $released,
+            ]);
+
+            foreach ($allActorsIds as $actorId) {
+                ActorFilm::create([
+                    'actor_id' => $actorId,
+                    'film_id' => $film->id,
+                ]);
+            }
+            foreach ($allGenresIds as $genreId) {
+                FilmGenre::create([
+                    'genre_id' => $genreId,
+                    'film_id' => $film->id,
+                ]);
+            }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            Log::warning($e->getMessage());
+        }
+        return $film;
     }
 
-
     /**
-     * Метод добавления фильма в базу, возвращающий информацию о фильме
+     * Метод, возвращающий информацию о фильме
      *
      * @param User|null $user - null, если пользователь не авторизован, поле isFavorite не выводится
      * @return array
