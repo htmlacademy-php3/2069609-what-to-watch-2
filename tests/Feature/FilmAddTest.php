@@ -8,10 +8,8 @@ use App\Models\Actor;
 use App\Models\Film;
 use App\Models\Genre;
 use App\Services\FilmService;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
-use Laravel\Sanctum\Sanctum;
 use Mockery\MockInterface;
 use Tests\TestCase;
 use Throwable;
@@ -75,7 +73,7 @@ class FilmAddTest extends TestCase
         $this->assertDatabaseCount('actors', 3);
         $this->assertDatabaseCount('genres', 2);
 
-        // Проверка наличия эталонных атрибутов в созданных записях таблиц: 'films', 'actors' и 'genres'
+        // Проверка наличия полей в созданных записях
         $filmCreate = Film::first()->toArray();
 
         foreach ($film as $key => $value) {
