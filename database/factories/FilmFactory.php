@@ -36,7 +36,7 @@ class FilmFactory extends Factory
             'director' => $this->faker->name(),
             'run_time' => $this->faker->numberBetween(20, 500),
             'released' => $this->faker->year(),
-            'imdb_id' => $this->faker->unique()->word(),
+            'imdb_id' => 'tt' . $this->faker->unique()->randomNumber(7, true),
             'status' => $this->faker->randomElement(['pending','on moderation','ready']),
         ];
     }
