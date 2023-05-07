@@ -54,13 +54,13 @@ class AuthController extends Controller
                 abort(401, trans('auth.failed'));
             }
 
-            $user = Auth::user();
+            $user = $request->user();
             $token = $user->createToken('auth-token');
             $data = [
                 'user' => $user,
                 'token' => $token->plainTextToken,
             ];
-            return new SuccessResponse(data: $data, statusCode: 201);
+            return new SuccessResponse(data: $data);
         }
         catch (Throwable $e) {
             return new FailResponse(statusCode: 500, exception: $e);

@@ -244,4 +244,30 @@ class FilmService
         $this->film = $film;
     }
 
+    /**
+     * Метод установки фильма ПРОМО-ФИЛЬМОМ
+     *
+     * @return string[]
+     * @throws Throwable
+     */
+    public function getNewPromoFilm(): array
+    {
+        $promo = Film::where(['is_promo' => true])->first();
+
+        DB::beginTransaction();
+        try {
+            if ($promo) {
+                $promo->is_promo = false;
+                $promo->save();
+            }
+
+            $this->film->is_promo = true;
+            $this->film->save();
+        } catch (Exception $e) {
+            DB::rollback();
+            Log::warning($e->getMessage());
+        }
+        return ['message' => 'Фильм с id = ' . $this->film->id . ' стал новым промо-фильмом'];
+    }
+
 }

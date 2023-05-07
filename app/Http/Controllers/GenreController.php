@@ -9,9 +9,9 @@ use App\Http\Responses\Fail\ForbiddenResponse;
 use App\Http\Responses\Fail\NotFoundResponse;
 use App\Http\Responses\Success\SuccessResponse;
 use App\Models\Genre;
-use Auth;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class GenreController extends Controller
 {
@@ -46,7 +46,7 @@ class GenreController extends Controller
                 return new NotFoundResponse();
             }
 
-            if ((Auth::user()->is_moderator == 0)) {
+            if (Gate::denies('edit-resource')) {
                 return new ForbiddenResponse();
             }
 
