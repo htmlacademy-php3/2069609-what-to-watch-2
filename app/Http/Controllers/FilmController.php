@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Handlers\Permission;
 use App\Http\Requests\Film\FilmAddRequest;
 use App\Http\Requests\Film\FilmUpdateRequest;
 use App\Http\Responses\BaseResponse;
@@ -17,6 +16,7 @@ use Auth;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -54,13 +54,12 @@ class FilmController extends Controller
     public function store(FilmAddRequest $request): BaseResponse
     {
         try {
-            $user = Auth::user();
-
-            if (!Permission::isUserModerator($user)) {
+            if (Gate::denies('edit-resource')) {
                 return new ForbiddenResponse();
             }
 
             AddFilmJob::dispatch($request->imdb_id);
+
             return new SuccessResponse(['message' => 'Фильм успешно сохранен в базу'], 201);
         } catch (Exception $e) {
             return new FailResponse(statusCode: 500, exception: $e);
@@ -113,7 +112,7 @@ class FilmController extends Controller
 
             $user = Auth::user();
 
-            if (!Permission::isUserModerator($user)) {
+            if (Gate::denies('edit-resource')) {
                 return new ForbiddenResponse();
             }
 

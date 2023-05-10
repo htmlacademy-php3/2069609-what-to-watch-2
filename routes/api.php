@@ -21,15 +21,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 //доступ для всех
-Route::post('/register', [AuthController::class, 'register']);
+Route::post('/register', [AuthController::class, 'register'])->name('register');
 //доступ для всех
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 //авторизация
-Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout'])->name('logout');
 //авторизация
 Route::prefix('user')->middleware('auth:sanctum')->group(function () {
-    Route::get('/', [UserController::class, 'show']);
-    Route::patch('/', [UserController::class, 'update']);
+    Route::get('/', [UserController::class, 'show'])->name('user.show');
+    Route::patch('/', [UserController::class, 'update'])->name('user.update');
 });
 //авторизация + Модератор
 Route::prefix('comments')->middleware('auth:sanctum')->group(function () {
@@ -40,8 +40,8 @@ Route::prefix('comments')->middleware('auth:sanctum')->group(function () {
 Route::prefix('films')->middleware('auth:sanctum')->group(function () {
     Route::post('/', [FilmController::class, 'store'])->name('films.store');
     Route::patch('/{id}', [FilmController::class, 'update'])->name('films.update');
-    Route::post('/{id}/favorite', [FavoriteController::class, 'store']);
-    Route::delete('/{id}/favorite', [FavoriteController::class, 'destroy']);
+    Route::post('/{id}/favorite', [FavoriteController::class, 'store'])->name('favorite.add');
+    Route::delete('/{id}/favorite', [FavoriteController::class, 'destroy'])->name('favorite.delete');
     Route::post('/{id}/comments', [CommentController::class, 'store'])->name('comments.store');
 });
 //для всех
@@ -58,9 +58,9 @@ Route::get('/genres', [GenreController::class, 'index'])->name('genres.index');
 Route::middleware('auth:sanctum')->patch('/genres/{id}', [GenreController::class, 'update'])->name('genres.update');
 
 //для всех
-Route::get('/promo', [PromoController::class, 'index']);
+Route::get('/promo', [PromoController::class, 'index'])->name('promo.index');
 //Модератор
-Route::middleware('auth:sanctum')->post('/promo/{id}', [PromoController::class, 'store']);
+Route::middleware('auth:sanctum')->post('/promo/{id}', [PromoController::class, 'store'])->name('promo.add');
 //авторизация
-Route::middleware('auth:sanctum')->get('/favorite', [FavoriteController::class, 'index']);
+Route::middleware('auth:sanctum')->get('/favorite', [FavoriteController::class, 'index'])->name('favorite.index');
 

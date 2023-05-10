@@ -66,10 +66,15 @@ use Illuminate\Support\Carbon;
 class Film extends Model
 {
     use HasFactory;
+
     /**
      * @var string
      */
     protected $table = 'films';
+
+    protected $attributes = [
+        'is_promo' => false,
+    ];
 
     /**
      * The attributes that are mass assignable.

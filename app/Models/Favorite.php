@@ -37,6 +37,11 @@ class Favorite extends Model
     use HasFactory;
     protected $table = 'favorites';
 
+    protected $fillable = [
+        'film_id',
+        'user_id',
+    ];
+
     /**
      * The attributes that should be cast.
      *

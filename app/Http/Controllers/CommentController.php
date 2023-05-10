@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Handlers\Permission;
 use App\Http\Requests\Comment\CommentAddRequest;
 use App\Http\Requests\Comment\CommentUpdateRequest;
 use App\Http\Responses\BaseResponse;
@@ -15,6 +14,7 @@ use App\Models\Film;
 use App\Services\CommentService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Throwable;
 
 class CommentController extends Controller
@@ -88,7 +88,7 @@ class CommentController extends Controller
 
             $user = Auth::user();
 
-            if ((Permission::isUserAuthor($user, $comment) || Permission::isUserModerator($user)) == 0) {
+            if ($user->cannot('update', $comment)) {
                 return new ForbiddenResponse();
             }
 
@@ -119,28 +119,33 @@ class CommentController extends Controller
             $user = Auth::user();
             $this->commentService->setComment($comment);
 
-            //Если тек пользователь автор|модератор && у комментария нет потомков
-            if ((Permission::isUserAuthor($user, $comment) || Permission::isUserModerator($user)) && !$this->commentService->isCommentHaveChildren()) {
+            //Если тек пользователь модератор && у комментария нет потомков
+            if (Gate::allows('edit-resource') && !$this->commentService->isCommentHaveChildren()) {
                 $comment->delete();
                 $messageData = ['message' => 'Комментарий успешно удален'];
                 return new SuccessResponse($messageData);
             }
 
             //Если тек пользователь модератор && у комментария есть потомки
-            if (Permission::isUserModerator($user) && $this->commentService->isCommentHaveChildren()) {
+            if (Gate::allows('edit-resource') && $this->commentService->isCommentHaveChildren()) {
                 $this->commentService->deleteCommentAndChildren();
-
                 $messageData = ['message' => 'Комментарий  и его потомки успешно удалены'];
                 return new SuccessResponse($messageData);
             }
 
-            //Если текущий пользователь автор, но у комментария есть потомки
-            if (Permission::isUserAuthor($user, $comment) && $this->commentService->isCommentHaveChildren()) {
+            //Если текущий пользователь автор, и у комментария есть потомки
+            if ($user->can('delete', $comment) && $this->commentService->isCommentHaveChildren()) {
                 return new ForbiddenResponse(message: 'Вы не можете удалить данный комментарий, тк у него есть ответы.');
             }
 
-            return new ForbiddenResponse();
+            //Если текущий пользователь автор, но у комментария нет потомков
+            if ($user->can('delete', $comment) && !$this->commentService->isCommentHaveChildren()) {
+                $comment->delete();
+                $messageData = ['message' => 'Комментарий успешно удален'];
+                return new SuccessResponse($messageData);
+            }
 
+            return new ForbiddenResponse();
         } catch (Exception $e) {
             return new FailResponse(statusCode:500, exception: $e);
         }

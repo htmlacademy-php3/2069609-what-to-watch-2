@@ -40,4 +40,18 @@ class FilmFactory extends Factory
             'status' => $this->faker->randomElement(['pending','on moderation','ready']),
         ];
     }
+
+    /**
+     * Установка промо фильма
+     *
+     * @return FilmFactory
+     */
+    public function promo(): FilmFactory
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'is_promo' => true,
+            ];
+        });
+    }
 }
