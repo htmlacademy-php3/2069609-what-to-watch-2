@@ -60,6 +60,10 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    const ROLE_MODERATOR = 'Модератор';
+    const ROLE_USER = 'Пользователь';
+
+
     protected $table = 'users';
     protected $attributes = [
         'is_moderator' => false,
