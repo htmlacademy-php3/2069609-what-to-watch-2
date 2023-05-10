@@ -16,9 +16,9 @@ class UserService
     public function getInfo(): array
     {
         if ($this->user->is_moderator) {
-            $role = 'Модератор';
+            $role = User::ROLE_MODERATOR;
         } else {
-            $role = 'Пользователь';
+            $role = User::ROLE_USER;
         }
 
         return [
