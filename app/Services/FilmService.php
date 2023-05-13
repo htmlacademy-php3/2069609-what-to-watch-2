@@ -3,11 +3,8 @@
 namespace App\Services;
 
 use App\Http\Repositories\Interfaces\MovieRepositoryInterface;
-use App\Http\Requests\Film\FilmUpdateRequest;
 use App\Models\Actor;
-use App\Models\ActorFilm;
 use App\Models\Film;
-use App\Models\FilmGenre;
 use App\Models\Genre;
 use App\Models\User;
 use Exception;
@@ -85,16 +82,10 @@ class FilmService
             ]);
 
             foreach ($allActorsIds as $actorId) {
-                ActorFilm::create([
-                    'actor_id' => $actorId,
-                    'film_id' => $film->id,
-                ]);
+                $film->actors()->attach(['actor_id' => $actorId]);
             }
             foreach ($allGenresIds as $genreId) {
-                FilmGenre::create([
-                    'genre_id' => $genreId,
-                    'film_id' => $film->id,
-                ]);
+                $film->genres()->attach(['genre_id' => $genreId]);
             }
             DB::commit();
         } catch (Exception $e) {
@@ -150,57 +141,44 @@ class FilmService
     /**
      * Метод обновляющий жанры фильма
      *
-     * @param FilmUpdateRequest $request
+     * @param array $genreIds - массив из id жанров
      * @return void
      * @throws Throwable
      */
-    public function updateGenresForFilm(FilmUpdateRequest $request): void
+    public function updateGenresForFilm(array $genreIds): void
     {
-        if ($request->genre_id) {
-
-            DB::beginTransaction();
-            try {
-                $this->film->genres()->delete();
-
-                foreach ($request->genre_id as $genreId) {
-                    FilmGenre::create([
-                        'film_id' => $this->film->id,
-                        'genre_id' => $genreId
-                    ]);
-                }
-                DB::commit();
-            } catch (Exception $e) {
-                DB::rollback();
-                Log::warning($e->getMessage());
+        DB::beginTransaction();
+        try {
+            $this->film->genres()->detach();
+            foreach ($genreIds as $genreId) {
+                $this->film->genres()->attach(['genre_id' => $genreId]);
             }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            Log::warning($e->getMessage());
         }
     }
 
     /**
      * Метод обновляющий актеров фильма
      *
-     * @param FilmUpdateRequest $request
+     * @param array $starringIds - массив из id актеров
      * @return void
      * @throws Throwable
      */
-    public function updateActorsForFilm(FilmUpdateRequest $request): void
+    public function updateActorsForFilm(array $starringIds): void
     {
-        if ($request->starring_id) {
-
-            DB::beginTransaction();
-            try {
-                $this->film->actors()->delete();
-                foreach ($request->starring_id as $starringId) {
-                    ActorFilm::create([
-                        'film_id' => $this->film->id,
-                        'actor_id' => $starringId
-                    ]);
-                }
-                DB::commit();
-            } catch (Exception $e) {
-                DB::rollback();
-                Log::warning($e->getMessage());
+        DB::beginTransaction();
+        try {
+            $this->film->actors()->detach();
+            foreach ($starringIds as $starringId) {
+                $this->film->actors()->attach(['actor_id' => $starringId]);
             }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            Log::warning($e->getMessage());
         }
     }
 

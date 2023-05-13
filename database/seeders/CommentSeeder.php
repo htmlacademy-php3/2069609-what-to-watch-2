@@ -19,9 +19,9 @@ class CommentSeeder extends Seeder
     public function run(): void
     {
         Comment::factory(1)
-            ->count(1)
+            ->count(6)
             ->state(new Sequence(
-                fn($sequence) => ['film_id' => 1, 'user_id' => 12, 'comment_id' => 40],
+                fn($sequence) => ['film_id' => 1, 'user_id' => 15, 'comment_id' => 4],
             ))
             ->create();
     }

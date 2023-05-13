@@ -118,28 +118,29 @@ class CommentController extends Controller
 
             $user = Auth::user();
             $this->commentService->setComment($comment);
+            $isCommentHasChildren  = $this->commentService->isCommentHasChildren();
 
             //Если тек пользователь модератор && у комментария нет потомков
-            if (Gate::allows('edit-resource') && !$this->commentService->isCommentHaveChildren()) {
+            if (Gate::allows('edit-resource') && !$isCommentHasChildren) {
                 $comment->delete();
                 $messageData = ['message' => 'Комментарий успешно удален'];
                 return new SuccessResponse($messageData);
             }
 
             //Если тек пользователь модератор && у комментария есть потомки
-            if (Gate::allows('edit-resource') && $this->commentService->isCommentHaveChildren()) {
+            if (Gate::allows('edit-resource') && $isCommentHasChildren) {
                 $this->commentService->deleteCommentAndChildren();
                 $messageData = ['message' => 'Комментарий  и его потомки успешно удалены'];
                 return new SuccessResponse($messageData);
             }
 
             //Если текущий пользователь автор, и у комментария есть потомки
-            if ($user->can('delete', $comment) && $this->commentService->isCommentHaveChildren()) {
+            if ($user->can('delete', $comment) && $isCommentHasChildren) {
                 return new ForbiddenResponse(message: 'Вы не можете удалить данный комментарий, тк у него есть ответы.');
             }
 
             //Если текущий пользователь автор, но у комментария нет потомков
-            if ($user->can('delete', $comment) && !$this->commentService->isCommentHaveChildren()) {
+            if ($user->can('delete', $comment) && !$isCommentHasChildren) {
                 $comment->delete();
                 $messageData = ['message' => 'Комментарий успешно удален'];
                 return new SuccessResponse($messageData);

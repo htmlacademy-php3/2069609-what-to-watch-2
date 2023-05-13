@@ -10,11 +10,13 @@ use App\Http\Responses\Fail\NotFoundResponse;
 use App\Http\Responses\Success\SuccessPaginatedResponse;
 use App\Http\Responses\Success\SuccessResponse;
 use App\Jobs\AddFilmJob;
+use App\Models\ActorFilm;
 use App\Models\Film;
+use App\Models\FilmGenre;
 use App\Services\FilmService;
-use Auth;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -103,14 +105,13 @@ class FilmController extends Controller
      */
     public function update(FilmUpdateRequest $request, int $filmId): BaseResponse
     {
+        /*
         try {
             $film = Film::find($filmId);
 
             if (!$film) {
                 return new NotFoundResponse();
             }
-
-            $user = Auth::user();
 
             if (Gate::denies('edit-resource')) {
                 return new ForbiddenResponse();
@@ -129,12 +130,44 @@ class FilmController extends Controller
                 Log::warning($e->getMessage());
             }
 
-            $data = $this->filmService->showInfoAboutFilm($user);
+            $data = $this->filmService->showInfoAboutFilm();
 
             return new SuccessResponse($data);
         } catch (Exception $e) {
             return new FailResponse(statusCode: 500, exception: $e);
+        }*/
+
+        $film = Film::find($filmId);
+
+        if (!$film) {
+            return new NotFoundResponse();
         }
+
+        if (Gate::denies('edit-resource')) {
+            return new ForbiddenResponse();
+        }
+        DB::beginTransaction();
+        try {
+            $film->update($request->validated());
+            $this->filmService->setFilm($film);
+
+            if ($request->genre_id) {
+                $this->filmService->updateGenresForFilm($request->genre_id);
+            }
+            if ($request->starring_id) {
+                $this->filmService->updateActorsForFilm($request->starring_id);
+            }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            Log::warning($e->getMessage());
+        }
+
+        $data = $this->filmService->showInfoAboutFilm();
+
+        return new SuccessResponse($data);
+
+
     }
 
     /**

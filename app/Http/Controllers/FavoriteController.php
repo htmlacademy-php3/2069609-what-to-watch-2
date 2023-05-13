@@ -7,7 +7,6 @@ use App\Http\Responses\Fail\FailResponse;
 use App\Http\Responses\Fail\NotFoundResponse;
 use App\Http\Responses\Fail\UnauthorizedResponse;
 use App\Http\Responses\Success\SuccessResponse;
-use App\Models\Favorite;
 use App\Models\Film;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -61,7 +60,7 @@ class FavoriteController extends Controller
                 return new FailResponse(statusCode: 422, message: 'Данный фильм уже у вас в избранном');
             }
 
-            Favorite::create(['film_id' => $filmId, 'user_id' => $user->id]);
+            $user->favorites()->attach(['film_id' => $filmId]);
 
             return new SuccessResponse(['message' => 'Фильм успешно добавлен в избранное']);
         } catch (Exception $e) {
