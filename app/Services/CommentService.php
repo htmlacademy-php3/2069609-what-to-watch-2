@@ -60,9 +60,9 @@ class CommentService
      *
      * @return bool
      */
-    public function isCommentHaveChildren(): bool
+    public function isCommentHasChildren(): bool
     {
-        if (DB::table('comments')->where('comment_id', '=' , $this->comment->id)->first()) {
+        if (Comment::where('comment_id', '=' , $this->comment->id)->exists()) {
             return true;
         }
         return false;
@@ -79,8 +79,9 @@ class CommentService
     {
         DB::beginTransaction();
         try {
-            DB::delete('delete from comments where comment_id = ?', [$this->comment->id]);
-            $this->comment->delete();
+            Comment::where('comment_id', '=', $this->comment->id)
+                ->orWhere('id', '=', $this->comment->id)
+                ->delete();
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
